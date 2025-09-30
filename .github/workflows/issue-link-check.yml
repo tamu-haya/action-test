@@ -1,0 +1,38 @@
+name: Issue Link Check
+
+on:
+  push:
+    branches-ignore:
+      - main  # マージコミットは対象外に
+  pull_request:
+    types: [opened, synchronize]
+
+jobs:
+  check_commits:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check commits for open issue references
+        run: |
+          # コミットメッセージに #123 の形式でOpen Issue番号が含まれているか確認
+          commits=$(git log origin/main..HEAD --pretty=format:%s)
+          missing_issues=$(echo "$commits" | grep -vE '#[0-9]+')
+          if [ -n "$missing_issues" ]; then
+            echo "Some commits do not reference an open issue with #issue_number:"
+            echo "$missing_issues"
+            exit 1
+          fi
+
+  check_pr:
+    runs-on: ubuntu-latest
+    needs: check_commits
+    if: github.event_name == 'pull_request'
+    steps:
+      - name: Verify PR closes an issue
+        run: |
+          pr_body="${{ github.event.pull_request.body }}"
+          if ! echo "$pr_body" | grep -iqE 'close[sd]? #\d+'; then
+            echo "PR body does not mention closing an issue. Please link the closing issue with 'closes #issue_number'."
+            exit 1
+          fi
