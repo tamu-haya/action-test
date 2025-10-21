@@ -11,7 +11,7 @@ jobs:
       - uses: "dessant/lock-threads@v5"
         with:
           github-token: "${{ github.token }}"
-          issue-inactive-days: "1"
-          pr-inactive-days: "1"
-          discussion-inactive-days: "1"
+          issue-inactive-days: "0"
+          pr-inactive-days: "0"
+          discussion-inactive-days: "0"
           
