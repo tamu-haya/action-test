@@ -18,28 +18,11 @@ jobs:
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
-            const labelName = context.payload.label?.name;
-            if (labelName === 'close-me') {
-              if (context.payload.issue) {
-                // Issue(とPR)はissues APIでクローズ。PRもここで問題ない場合が多い
-                await github.issues.update({
-                  owner: context.repo.owner,
-                  repo: context.repo.repo,
-                  issue_number: context.payload.issue.number,
-                  state: 'closed',
-                });
-                console.log(`Closed issue #${context.payload.issue.number}`);
-              } else if (context.payload.discussion) {
-                // Discussionは専用API
-                await github.rest.discussions.update({
-                  owner: context.repo.owner,
-                  repo: context.repo.repo,
-                  discussion_number: context.payload.discussion.number,
-                  state: 'closed',
-                });
-                console.log(`Closed discussion #${context.payload.discussion.number}`);
-              } else {
-                console.log('Neither issue nor discussion found in payload.');
-              }
+            const params = {
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.payload.issue.number,
+              state: 'closed',
             }
+            await github.rest.issues.update(params)
 
