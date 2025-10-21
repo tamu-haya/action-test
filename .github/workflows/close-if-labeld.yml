@@ -1,8 +1,8 @@
 name: Auto close with label # tmp
 
 on:
-  schedule:
-    - cron: 0 0 * * *
+  issues:
+    types: [labeled]
   workflow_dispatch:
 
 permissions:
