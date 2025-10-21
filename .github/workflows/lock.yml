@@ -1,0 +1,16 @@
+name: "Lock Issues, PRs, and Discussions0"
+on:
+  schedule:
+    - cron: "0 0 * * *"
+    
+jobs:
+  lock:
+    runs-on: "ubuntu-latest"
+    steps:
+      - uses: "dessant/lock-threads@v5"
+        with:
+          github-token: "${{ github.token }}"
+          issue-inactive-days: "1"
+          pr-inactive-days: "1"
+          discussion-inactive-days: "1"
+          
