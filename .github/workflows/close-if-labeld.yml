@@ -1,0 +1,41 @@
+name: Auto close with label # tmp
+
+on:
+  schedule:
+    - cron: 0 0 * * *
+  workflow_dispatch:
+
+permissions:
+  issues: write
+  pull-requests: write
+  discussions: write
+
+jobs:
+  close-if-rejected:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/github-script@v6
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const labelName = context.payload.label.name;
+            if (labelName === 'close-me') {
+              const issueOrPr = context.payload.issue || context.payload.pull_request;
+              const discussion = context.payload.discussion;
+
+              if (issueOrPr) {
+                await github.issues.update({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  issue_number: issueOrPr.number,
+                  state: 'closed'
+                });
+              } else if (discussion) {
+                await github.rest.discussions.update({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  discussion_number: discussion.number,
+                  state: 'closed'
+                });
+              }
+            }
