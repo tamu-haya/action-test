@@ -18,7 +18,7 @@ jobs:
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
-            const labelName = context.payload.label.name;
+            const labelName = context.payload.label?.name;
             if (labelName === 'close-me') {
               const issueOrPr = context.payload.issue || context.payload.pull_request;
               const discussion = context.payload.discussion;
